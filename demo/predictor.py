@@ -61,7 +61,9 @@ class VisualizationDemo(object):
                 )
             if "instances" in predictions:
                 instances = predictions["instances"].to(self.cpu_device)
-                vis_output,polygons = visualizer.draw_instance_predictions(predictions=instances)
+                #vis_output,polygons = visualizer.draw_instance_predictions(predictions=instances)
+                polygons = instances.pred_masks if instances.has("pred_masks") else None
+                vis_output = visualizer.draw_instance_predictions(predictions=instances)
 
         return predictions, vis_output, polygons
 
@@ -170,7 +172,7 @@ class AsyncPredictor:
         for gpuid in range(max(num_gpus, 1)):
             cfg = cfg.clone()
             cfg.defrost()
-            cfg.MODEL.DEVICE = "cuda:{}".format(gpuid) if num_gpus > 0 else "cpu"
+            cfg.MODEL.DEVICE = "cpu"
             self.procs.append(
                 AsyncPredictor._PredictWorker(cfg, self.task_queue, self.result_queue)
             )

@@ -101,6 +101,10 @@ if __name__ == "__main__":
     args = get_parser().parse_args()
 
     cfg = setup_cfg(args)
+    cfg.defrost()        # 추가!! -> 먼저 얼음 풀어주기
+    cfg.MODEL.DEVICE = "cpu"  # 이제 수정
+
+
     detection_demo = VisualizationDemo(cfg)
 
     test_images_path = args.input
@@ -117,7 +121,7 @@ if __name__ == "__main__":
 
         prediction, vis_output, polygons = detection_demo.run_on_image(img)
 
-        txt_save_path = output_path + 'res_img' + img_name.split('.')[0].split('img')[1] + '.txt'
+        txt_save_path = output_path + 'res_' + img_name.split('.')[0] + '.txt'
         save_result_to_txt(txt_save_path,prediction,polygons)
 
         print("Time: {:.2f} s / img".format(time.time() - start_time))
